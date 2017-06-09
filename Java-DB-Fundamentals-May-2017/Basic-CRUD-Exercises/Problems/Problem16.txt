@@ -1,0 +1,11 @@
+CREATE VIEW `v_employees_job_titles` AS
+SELECT 
+CONCAT
+(
+`first_name`, 
+CASE 
+WHEN `middle_name` IS NULL THEN '  ' 
+WHEN TRIM(`middle_name`) = '' THEN '  ' 
+ELSE CONCAT(' ', `middle_name`, ' ')
+END, `last_name`) AS 'full_name', `job_title`
+FROM `employees`;
