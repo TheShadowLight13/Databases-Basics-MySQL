@@ -1,0 +1,90 @@
+CREATE TABLE categories 
+(
+id INT NOT NULL PRIMARY KEY,
+category VARCHAR(50) NOT NULL,
+daily_rate DOUBLE NOT NULL,
+weekly_rate DOUBLE,
+monthly_rate DOUBLE,
+weekend_rate DOUBLE
+);
+
+CREATE TABLE cars
+(
+id INT NOT NULL PRIMARY KEY, 
+plate_number VARCHAR(50) NOT NULL, 
+make VARCHAR(50) NOT NULL, 
+model VARCHAR(50) NOT NULL, 
+car_year DATE NOT NULL, 
+category_id INT, 
+doors INT(1) NOT NULL, 
+picture BLOB, 
+car_condition VARCHAR(50) NOT NULL, 
+available BOOL NOT NULL
+);
+
+CREATE TABLE employees
+(
+id INT NOT NULL PRIMARY KEY, 
+first_name VARCHAR(50) NOT NULL, 
+last_name VARCHAR(50) NOT NULL, 
+title VARCHAR(50) NOT NULL, 
+notes TEXT
+);
+
+CREATE TABLE customers
+(
+id INT NOT NULL PRIMARY KEY, 
+driver_licence_number VARCHAR(50) NOT NULL, 
+full_name VARCHAR(100) NOT NULL, 
+address VARCHAR(50) NOT NULL, 
+city VARCHAR(50) NOT NULL, 
+zip_code VARCHAR(10), 
+notes TEXT
+);
+
+CREATE TABLE rental_orders
+(
+id INT PRIMARY KEY AUTO_INCREMENT, 
+employee_id INT, 
+customer_id INT, 
+car_id INT, 
+car_condition VARCHAR(50) NOT NULL, 
+tank_level DOUBLE NOT NULL, 
+kilometrage_start DOUBLE NOT NULL, 
+kilometrage_end DOUBLE NOT NULL, 
+total_kilometrage DOUBLE NOT NULL, 
+start_date DATE NOT NULL, 
+end_date DATE NOT NULL, 
+total_days INT NOT NULL, 
+rate_applied DOUBLE NOT NULL, 
+tax_rate DOUBLE NOT NULL, 
+order_status VARCHAR(50) NOT NULL, 
+notes TEXT
+);
+
+INSERT INTO categories(id, category, daily_rate)
+VALUES (1, 'hechbeg', 55.60), 
+       (2, 'combi', 30.00),
+	   (3, 'limozina', 100.00);
+
+INSERT INTO cars(id, plate_number, make, model, car_year, category_id, doors, car_condition, available)
+VALUES(1, 'PA2014AX', 'BMW', 'X6', '2014-12-12', 2, 4, 'cleansing', true), 
+      (2, 'CA2222AA', 'Volvo', 'XC90', '2016-10-12', 3, 2, 'available', false),
+	   (3, 'PA8423AA', 'VW', 'Golf 2', '1987-09-23', 1, 5, 'unavailable', true);
+
+INSERT INTO employees(id, first_name, last_name, title)
+VALUES 
+(1, 'Dimitar', 'Dimitrov', 'konsultant'),
+(2, 'Ivan', 'Dimitrov', 'konsultant'),
+(3, 'Krum', 'Spasov', 'upravitel');
+
+INSERT INTO customers(id, driver_licence_number, full_name, address, city)
+VALUES 
+(1, '20121A23', 'Spas Dimitrov', 'Septemvri', 'Pazardzhik'),
+(2, '20121AAD', 'Ivan Dimitrov', 'Septemvri23', 'Sofia'),
+(3, '3456GGHH', 'Ivailo Konev', 'Septemvri29', 'Varna');
+
+INSERT INTO rental_orders(id, employee_id, customer_id, car_id, car_condition, tank_level, kilometrage_start, kilometrage_end, total_kilometrage, start_date, end_date, total_days, rate_applied, tax_rate, order_status)
+VALUES (1, 2, 3, 3, 'Extra', 100.00, 20000.00, 20500.00, 500.00, '2017-12-07', '2017-12-10', 3, 100.00, 0.20, 'processing'),
+	   (2, 1, 1, 2, 'Extra', 200.00, 21000.00, 21500.00, 400.00, '2017-12-10', '2017-12-13', 3, 100.00, 0.20, 'finished'),
+	   (3, 3, 2, 1, 'Extra', 300.00, 20500.00, 22500.00, 200.00, '2017-12-08', '2017-12-11', 3, 100.00, 0.20, 'processing');

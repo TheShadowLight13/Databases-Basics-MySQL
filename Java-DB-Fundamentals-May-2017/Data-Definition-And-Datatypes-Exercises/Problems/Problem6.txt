@@ -1,0 +1,18 @@
+CREATE TABLE people
+(
+id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+name VARCHAR(200) NOT NULL,
+picture BLOB,
+height DOUBLE,
+weight DOUBLE,
+gender CHAR NOT NULL,
+birthdate DATE NOT NULL,
+biography TEXT
+);
+
+INSERT INTO people(name, gender, birthdate) 
+VALUES ('Hristo', 'm', '2014-09-20'),
+       ('Test','f', '2014-09-20'),
+       ('Vasil','m', '2014-09-20'),
+       ('Diko', 'm', '2014-09-20'),
+       ('Machina', 'm', '2014-09-20');

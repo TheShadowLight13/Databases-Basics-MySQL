@@ -1,0 +1,52 @@
+CREATE TABLE directors
+(
+id INT NOT NULL PRIMARY KEY, 
+director_name VARCHAR(50) NOT NULL, 
+notes TEXT
+);
+
+CREATE TABLE genres
+(
+id INT NOT NULL PRIMARY KEY, 
+genre_name VARCHAR(50) NOT NULL, 
+notes TEXT
+);
+
+CREATE TABLE categories
+(
+id INT NOT NULL PRIMARY KEY, 
+category_name VARCHAR(50) NOT NULL, 
+notes TEXT
+);
+
+CREATE TABLE movies
+(
+id INT NOT NULL PRIMARY KEY, 
+title VARCHAR(50) NOT NULL, 
+director_id INT, 
+copyright_year DATE NOT NULL, 
+`length` INT NOT NULL, 
+genre_id INT, 
+category_id INT, 
+rating DOUBLE, 
+notes TEXT
+);
+
+INSERT INTO categories(id, category_name)
+VALUES (1, 'test1'), (2, 'test2'), (3, 'test3'), (4, 'test4'), (5, 'test5');
+
+INSERT INTO genres(id, genre_name) 
+VALUES (1, 'action'), (2, 'horror'), (3, 'musical'), (4, 'sci-fi'), (5, 'drama');
+
+INSERT INTO directors(id, director_name) 
+VALUES (1, 'Steven Spielberg'), (2, 'Stanley Kubrick'), (3, 'Quentin Tarantino'), (4, 'Francis Ford Coppola'), (5, 'Christopher Nolan');
+
+INSERT INTO movies
+(id, title, copyright_year, `length`)
+VALUES 
+(1, 'The Matrix', '1994-12-23', 200),
+(2, 'The day the Earth stopped', '2008-08-08', 120),
+(3, 'Superman', '2014-10-29', 80),
+(4, 'The Wanderer', '2016-02-02', 60),
+(5, 'Blindspot', '2017-01-23', 50);
+

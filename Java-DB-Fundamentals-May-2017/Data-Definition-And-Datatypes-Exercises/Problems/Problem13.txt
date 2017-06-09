@@ -1,0 +1,109 @@
+CREATE TABLE employees
+(
+id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+first_name VARCHAR(50) NOT NULL, 
+last_name VARCHAR(50) NOT NULL, 
+title VARCHAR(50) NOT NULL, 
+notes TEXT
+);
+
+CREATE TABLE customers
+(
+account_number VARCHAR(10) NOT NULL PRIMARY KEY, 
+first_name VARCHAR(50) NOT NULL, 
+last_name VARCHAR(50) NOT NULL, 
+phone_number VARCHAR(10) NOT NULL, 
+emergency_name VARCHAR(50), 
+emergency_number VARCHAR(10), 
+notes TEXT
+);
+
+CREATE TABLE room_status 
+(
+room_status VARCHAR(50) NOT NULL PRIMARY KEY,
+notes TEXT
+);
+
+CREATE TABLE room_types
+(
+room_type VARCHAR(50) NOT NULL PRIMARY KEY,
+notes TEXT
+);
+
+CREATE TABLE bed_types
+(
+bed_type VARCHAR(50) NOT NULL PRIMARY KEY,
+notes TEXT
+);
+
+CREATE TABLE rooms
+(
+room_number INT NOT NULL PRIMARY KEY,
+room_type VARCHAR(50) NOT NULL,
+bed_type VARCHAR(50) NOT NULL,
+rate DOUBLE,
+room_status VARCHAR(50) NOT NULL,
+notes TEXT
+);
+
+CREATE TABLE payments
+(
+id INT PRIMARY KEY AUTO_INCREMENT,
+employee_id INT NOT NULL,
+payment_date DATE NOT NULL,
+account_number VARCHAR(10) NOT NULL,
+first_date_occupied DATE NOT NULL,
+last_date_occupied DATE NOT NULL,
+total_days INT NOT NULL,
+amount_charged DOUBLE NOT NULL,
+tax_rate DOUBLE NOT NULL,
+tax_amount DOUBLE NOT NULL,
+payment_total DOUBLE NOT NULL,
+notes TEXT
+);
+
+CREATE TABLE occupancies 
+(
+id INT PRIMARY KEY AUTO_INCREMENT,
+employee_id INT NOT NULL,
+date_occupied DATE NOT NULL,
+account_number VARCHAR(10) NOT NULL, 
+room_number INT NOT NULL,
+rate_applied DOUBLE,
+phone_charge DOUBLE,
+notes TEXT
+);
+
+INSERT INTO employees VALUES
+(1, 'Ivan', 'Ivanov', 'consultant', NULL),
+(2, 'Dimitar', 'Dimitrov', 'receptionist', NULL),
+(3, 'Kristo', 'Vasilev', 'manager', NULL);
+
+INSERT INTO customers VALUES 
+('20ADG4560', 'Boicho', 'Ivanov', '0897722046', NULL, NULL, NULL),
+('20ADG2345', 'Vasil', 'Vasilev', '0897778996', NULL, NULL, NULL),
+('20ADG3450', 'Tihomir', 'Ivanov', '0897722089', NULL, NULL, NULL);
+
+INSERT INTO room_status VALUES
+('cleaning', NULL), ('available', NULL), ('unavailable', NULL);
+
+INSERT INTO room_types VALUES
+('mezonet', NULL), ('ednostaen', NULL), ('apartment', NULL);
+
+INSERT INTO bed_types VALUES
+('spalnq', NULL), ('raztegaemo', NULL), ('edinichno', NULL);
+
+INSERT INTO rooms VALUES
+(1, 'ednostaen', 'edinichno', 5, 'available', NULL),
+(12, 'apartment', 'spalnq', 6, 'unavailable', NULL),
+(20, 'mezonet', 'edinichno', 3, 'cleaning', NULL);
+
+INSERT INTO payments VALUES
+(1, 2, '2017-10-12', '20ADG2345', '2017-10-13', '2017-10-25', 12, 150.0, 20.90, 10.0, 160.0, NULL), 
+(2, 1, '2017-10-13', '20ADG3450', '2017-11-13', '2017-11-25', 12, 150.0, 20.90, 10.0, 160.0, NULL),
+(3, 3, '2016-10-12', '20ADG4560', '2016-10-13', '2016-10-25', 12, 300.0, 20.90, 100.0, 400.0, NULL);
+
+INSERT INTO occupancies VALUES
+(1, 3, '2017-05-13', '20ADG4560', 1, 5, NULL, NULL),
+(2, 1, '2017-05-20', '20ADG3450', 12, NULL, NULL, NULL),
+(3, 2, '2017-06-20', '20ADG2345', 20, NULL, NULL, NULL);
