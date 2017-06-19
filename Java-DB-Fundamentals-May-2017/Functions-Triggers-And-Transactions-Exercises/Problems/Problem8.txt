@@ -1,0 +1,22 @@
+ALTER TABLE employees
+DROP FOREIGN KEY `fk_employees_departments`;
+
+ALTER TABLE employees
+DROP FOREIGN KEY `fk_employees_addresses`;
+
+ALTER TABLE employees_projects
+DROP FOREIGN KEY `fk_employees_projects_employees`;
+
+ALTER TABLE departments
+DROP FOREIGN KEY `fk_departments_employees`;
+
+ALTER TABLE employees
+DROP FOREIGN KEY `fk_employees_employees`;
+
+ALTER TABLE employees
+ADD CONSTRAINT `fk_employees_departments` 
+FOREIGN KEY(department_id) REFERENCES departments(department_id)
+ON DELETE CASCADE;
+
+DELETE FROM departments
+WHERE `name` IN ('Production', 'Production Control');

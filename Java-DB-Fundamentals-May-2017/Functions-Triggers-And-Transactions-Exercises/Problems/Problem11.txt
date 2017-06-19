@@ -1,0 +1,10 @@
+DELIMITER $$
+CREATE FUNCTION ufn_calculate_future_value(`sum` DECIMAL(19, 2), 
+yearly_interest_rate DECIMAL(19, 2), count_of_years INT)
+RETURNS DECIMAL(19, 2)
+BEGIN
+DECLARE future_value DECIMAL(19, 2);
+SET future_value := `sum` * (POW(1 + (yearly_interest_rate), count_of_years));
+RETURN future_value;
+END $$
+DELIMITER ;

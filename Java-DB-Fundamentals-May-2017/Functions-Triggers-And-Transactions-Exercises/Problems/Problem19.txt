@@ -1,0 +1,98 @@
+CREATE VIEW v_user_game_info AS
+SELECT u.id, u.user_name, ug.id AS 'users_games_id', g.name AS 'game_name', 
+g.id AS 'game_id', g.game_type_id, ug.level, ug.cash 
+FROM users AS u
+INNER JOIN users_games AS ug
+ON u.id = ug.user_id AND u.user_name = 'Alex'
+INNER JOIN games AS g
+ON ug.game_id = g.id AND (g.name = 'Edinburgh');
+
+CREATE VIEW v_user_allowed_items AS
+SELECT 
+    i.id, i.name, i.item_type_id, i.price, i.min_level
+FROM
+    items AS i
+INNER JOIN v_user_game_info AS vugi
+ON i.min_level <= vugi.level 
+WHERE
+    i.name IN ('Blackguard' , 'Bottomless Potion of Amplification',
+        'Eye of Etlich (Diablo III)',
+        'Gem of Efficacious Toxin',
+        'Golden Gorget of Leoric',
+        'Ziggurat Tooth',
+        'The Three Hundredth Spear',
+        'The Short Mans Finger',
+        'Tzo Krins Gaze',
+        'Valtheks Rebuke',
+        'Utars Roar',
+        'Urn of Quickening',
+        'Boots',
+        'Bombardiers Rucksack',
+        'Cloak of Deception',
+        'Hellfire Amulet');
+
+CREATE PROCEDURE usp_buy_item(item_id INT)
+BEGIN
+DECLARE item_price DECIMAL(19, 4);
+DECLARE target_users_games_id INT;
+SET item_price := (SELECT 
+    vuai.price
+FROM
+    v_user_allowed_items AS vuai
+WHERE
+    vuai.id = item_id);
+SET target_users_games_id = (SELECT 
+    vugi.users_games_id
+FROM
+    v_user_game_info AS vugi);
+START TRANSACTION;
+UPDATE users_games
+SET cash = cash - item_price
+WHERE id = target_users_games_id;
+IF ((SELECT ug.cash FROM users_games AS ug 
+		WHERE ug.id = (SELECT vugi.users_games_id FROM v_user_game_info AS vugi)) < 0) 
+THEN
+ROLLBACK;
+ELSE
+	INSERT INTO user_game_items(item_id, user_game_id) VALUES
+    (item_id, target_users_games_id);
+COMMIT;
+END IF;
+END;
+
+CREATE PROCEDURE usp_edinburgh_info()
+BEGIN
+SELECT u.user_name, g.name, ug.cash, i.name AS 'item_name' 
+FROM users_games AS ug
+INNER JOIN games AS g
+ON ug.game_id = g.id
+INNER JOIN users AS u
+ON ug.user_id = u.id
+INNER JOIN user_game_items AS ugi
+ON ug.id = ugi.user_game_id
+INNER JOIN items AS i
+ON ugi.item_id = i.id
+WHERE ug.game_id = g.id AND (g.name = 'Edinburgh')
+ORDER BY i.name ASC;
+END;
+
+CREATE FUNCTION usp_get_item_id_by_name(item_name VARCHAR(255))
+RETURNS INT
+BEGIN
+DECLARE item_id INT;
+SET item_id = (SELECT vuai.id FROM v_user_allowed_items AS vuai
+WHERE vuai.name = item_name);
+RETURN item_id; 
+END; 
+
+CREATE PROCEDURE usp_buy_items_for_alex()
+BEGIN
+CALL usp_buy_item((SELECT usp_get_item_id_by_name('Blackguard')));
+CALL usp_buy_item((SELECT usp_get_item_id_by_name('Eye of Etlich (Diablo III)')));
+CALL usp_buy_item((SELECT usp_get_item_id_by_name('Gem of Efficacious Toxin')));
+CALL usp_buy_item((SELECT usp_get_item_id_by_name('Golden Gorget of Leoric')));
+CALL usp_buy_item((SELECT usp_get_item_id_by_name('The Three Hundredth Spear')));
+CALL usp_buy_item((SELECT usp_get_item_id_by_name('Utars Roar')));
+CALL usp_edinburgh_info();
+END
+

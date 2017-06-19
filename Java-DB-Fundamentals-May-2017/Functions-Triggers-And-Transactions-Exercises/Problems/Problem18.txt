@@ -1,0 +1,67 @@
+CREATE VIEW v_user_game_info AS
+SELECT u.id, u.user_name, ug.id AS 'users_games_id', g.name AS 'game_name', 
+g.id AS 'game_id', g.game_type_id, ug.level, ug.cash 
+FROM users AS u
+INNER JOIN users_games AS ug
+ON u.id = ug.user_id AND u.user_name = 'Stamat'
+INNER JOIN games AS g
+ON ug.game_id = g.id AND (g.name = 'Safflower ');
+
+CREATE PROCEDURE usp_buy_items_from_level_range(start_level INT, end_level INT)
+BEGIN
+DECLARE total_sum_of_items DECIMAL(19, 4);
+DECLARE users_games_id INT;
+DECLARE `current_offset` INT DEFAULT 0;
+DECLARE current_item_id INT;
+DECLARE is_has_item BOOL DEFAULT TRUE;
+SET users_games_id := (SELECT vugi.users_games_id FROM v_user_game_info  AS vugi);
+SET total_sum_of_items := (SELECT SUM(ir.price) FROM 
+(SELECT * FROM items AS i WHERE i.min_level BETWEEN start_level AND end_level) AS ir);
+START TRANSACTION;
+UPDATE users_games 
+SET cash = cash - total_sum_of_items
+WHERE id = users_games_id;
+IF ((SELECT vugi.cash FROM v_user_game_info AS vugi) < 0) THEN
+ROLLBACK;
+ELSE 
+WHILE (is_has_item) DO
+IF ((SELECT COUNT(*) FROM (SELECT * FROM items AS i 
+				WHERE i.min_level 
+				BETWEEN start_level AND end_level 
+                LIMIT 1 OFFSET current_offset) AS item) = 1) THEN
+SET current_item_id := (SELECT i.id FROM items AS i 
+				WHERE i.min_level 
+				BETWEEN start_level AND end_level 
+                LIMIT 1 OFFSET current_offset);
+INSERT INTO user_game_items(item_id, user_game_id) 
+	VALUES (current_item_id, users_games_id);
+SET current_offset := current_offset + 1;
+ELSE
+SET is_has_item := false;
+END IF;
+END WHILE;
+COMMIT;
+END IF;
+END;
+
+CREATE PROCEDURE usp_get_all_items_for_stamat()
+BEGIN
+SELECT i.name AS 'item_name' FROM user_game_items AS ugi 
+INNER JOIN items AS i
+ON ugi.item_id = i.id
+WHERE ugi.user_game_id = (SELECT vugi.users_games_id FROM v_user_game_info AS vugi)
+ORDER BY item_name ASC;
+END;
+
+CREATE PROCEDURE usp_get_stamat_cash()
+BEGIN
+SELECT vugi.cash FROM v_user_game_info AS vugi;
+END;
+
+CREATE PROCEDURE usp_massive_shopping()
+BEGIN
+CALL usp_buy_items_from_level_range(11, 12);
+CALL usp_buy_items_from_level_range(19, 21);
+CALL usp_get_all_items_for_stamat();
+CALL usp_get_stamat_cash();
+END

@@ -1,0 +1,36 @@
+DELIMITER $$
+CREATE FUNCTION ufn_is_account_exist(account_id INT)
+RETURNS BOOL
+BEGIN
+DECLARE result BOOL;
+IF ((SELECT COUNT(*) FROM 
+	(SELECT * FROM accounts AS a WHERE a.id = account_id) AS ac) = 1) THEN
+SET result := true;
+ELSE SET result := false;
+END IF;
+RETURN result;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE usp_transfer_money(
+from_account_id INT, to_account_id INT, amount DECIMAL(19, 4))
+BEGIN
+START TRANSACTION;
+UPDATE accounts
+SET balance = balance - amount
+WHERE id = from_account_id;
+
+UPDATE accounts
+SET balance = balance + amount
+WHERE id = to_account_id;
+
+IF (amount > 0 AND (ufn_is_account_exist(from_account_id) = 1) AND 
+	(ufn_is_account_exist(to_account_id) = 1) AND 
+	(SELECT a.balance FROM accounts AS a WHERE a.id = from_account_id) >= 0) THEN
+    COMMIT;
+    ELSE 
+    ROLLBACK;
+END IF;
+END $$
+DELIMITER ;

@@ -1,0 +1,15 @@
+CREATE VIEW v_customers_balance AS
+SELECT ah.first_name, ah.last_name, SUM(a.balance) AS 'total_balance' 
+FROM account_holders AS ah
+INNER JOIN accounts AS a
+ON ah.id = a.account_holder_id
+GROUP BY ah.first_name, ah.last_name
+ORDER BY ah.first_name ASC, ah.last_name ASC;
+
+DELIMITER $$
+CREATE PROCEDURE usp_get_holders_with_balance_higher_than(target_balance DECIMAL(19,4))
+BEGIN
+SELECT vcb.first_name, vcb.last_name FROM v_customers_balance AS vcb
+WHERE vcb.total_balance > target_balance;
+END $$
+DELIMITER ;
